@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        {% block title %}
+        MMO Board
+        {% endblock title %}
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+          crossorigin="anonymous">
+</head>
+<body style="background-color: #ffffff;">
+<nav class="navbar sticky-top navbar-expand-lg navbar-light" style="background-color: #7fff00;">
+    <div class="container" id="navbarNav">
+        <a class="navbar-brand" href="{% url 'posts_list' %}" style="font-weight: bold;">Main 🏠</a>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'posts_search' %}" style="font-weight: bold;">Search 🔎</a>
+            </li>
+
+            {% if not user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'account_register' %}" style="font-weight: bold;">Register 📝</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'account_login' %}" style="font-weight: bold;">Login ✔</a>
+            </li>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'post_create' %}" style="font-weight: bold;">Post ➕</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile_posts' pk=request.user.id %}" style="font-weight: bold;">My posts 🗃️</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile_repls' pk=request.user.id %}" style="font-weight: bold;">My replies 📨</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'account_logout' %}" style="font-weight: bold;">Logout ✖️</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

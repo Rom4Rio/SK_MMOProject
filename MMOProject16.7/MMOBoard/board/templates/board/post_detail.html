@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+{{ post.title }} - {{ block.super }}
+{% endblock title %}
+
+
+{% block content %}
+
+<div class="card text-center">
+    <div class="card-header">
+        Posted by {{ post.author }}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">
+            {{ post.title }}
+        </h5>
+        <hr>
+        <p class="card-text">
+            {{ post.content|safe }}
+        </p>
+    </div>
+    {% if post.author == request.user %}
+    <hr>
+    <a href="{% url 'post_update' pk=post.id %}" class="btn btn-warning">
+        Edit this post
+    </a>
+    <a href="{% url 'post_del_ask' pk=post.id %}" class="btn btn-danger">
+        Delete this post
+    </a>
+    {% endif %}
+    <div class="card-footer text-muted">
+        {{ post.date_of_creation }}
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+{% if post.author != request.user and not current_user_left_reply %}
+<br>
+<hr>
+<form action="" method="POST" align="center">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="fieldWrapper">
+        {{ form.text.errors }}
+        <br>
+        <label for="{{ form.text.id_for_label }}">You can post your reply here:</label>
+        <br>
+        {{ form.text }}
+        <br>
+        <br>
+    </div>
+    <input type="submit" class="btn btn-success" value="Send"/>
+</form>
+<br>
+<hr>
+{% endif %}
+{% endif %}
+
+<br>
+
+{% for repl in post.replies_to_post.all %}
+<h3>
+    Replies
+</h3>
+<br>
+<div class="card mb-3 mx-auto" style="width: 50%">
+    <h5 class="card-header">
+        Reply by {{ repl.author }}
+    </h5>
+    <div class="card-body">
+        <p class="card-text">
+            {{ repl.text }}
+        </p>
+        {% if post.author == request.user %}
+        <hr>
+        {% if not repl.is_approved and not repl.is_rejected %}
+        <a href="{% url 'repl_apr_and_disapr' pk=post.id repl_pk=repl.id %}" class="btn btn-success">
+            Approve ✔
+        </a>
+        <a href="{% url 'repl_rej_and_unrej' pk=post.id repl_pk=repl.id %}" class="btn btn-dark">
+            Reject ↩
+        </a>
+        {% elif repl.is_approved and not repl.is_rejected %}
+        <a href="{% url 'repl_apr_and_disapr' pk=post.id repl_pk=repl.id %}" class="btn btn-outline-success">
+            Disapprove ✖
+        </a>
+        <a href="{% url 'repl_rej_and_unrej' pk=post.id repl_pk=repl.id %}" class="btn btn-dark">
+            Reject ↩
+        </a>
+        {% elif not repl.is_approved and repl.is_rejected %}
+        <a href="{% url 'repl_apr_and_disapr' pk=post.id repl_pk=repl.id %}" class="btn btn-success">
+            Approve ✔
+        </a>
+        <a href="{% url 'repl_rej_and_unrej' pk=post.id repl_pk=repl.id %}" class="btn btn-outline-dark">
+            Unreject ↪
+        </a>
+        {% endif %}
+        {% endif %}
+        {% if repl.author == request.user %}
+        <hr>
+        {% if repl.is_approved %}
+        <div class="alert alert-success" role="alert">
+            You reply is approved.
+        </div>
+        {% elif repl.is_rejected %}
+        <div class="alert alert-danger" role="alert">
+            You reply is rejected.
+        </div>
+        {% else %}
+        <div class="alert alert-secondary" role="alert">
+            You reply is in neutral status yet.
+        </div>
+        {% endif %}
+        <a href="{% url 'repl_del_ask' pk=post.id repl_pk=repl.id %}" class="btn btn-danger">
+            Delete this reply
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-footer text-muted">
+        {{ repl.date_of_creation }}
+    </div>
+</div>
+{% empty %}
+<h3>
+    No replies here yet
+</h3>
+{% endfor %}
+
+{% endblock content %}

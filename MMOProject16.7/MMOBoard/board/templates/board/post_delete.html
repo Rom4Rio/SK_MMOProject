@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Post delete - {{ block.super }}
+{% endblock title %}
+
+
+{% block content %}
+
+<div class="card text-center">
+    <div class="card-header">
+        {{ question }}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">
+            {{ post }}
+        </h5>
+    </div>
+    <div class="card-footer text-muted">
+        {{ post.date_of_creation }}
+    </div>
+</div>
+<br>
+<a href="{% url 'post_detail' pk=post.id %}" class="btn btn-secondary">
+    Cancel
+</a>
+<a href="{% url 'post_del_confirm' pk=post.id %}" class="btn btn-danger">
+    I'm sure. Delete this post
+</a>
+
+{% endblock content %}
